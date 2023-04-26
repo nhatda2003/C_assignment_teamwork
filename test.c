@@ -12,6 +12,7 @@ Tasks undone:
 - Case 2
 - Traffic light for case 1
 - Change: Big road 6 lanes, small road 3 lanes
+- File I/O to save the results after each simulation
 */
 #include<stdio.h>
 #include<stdlib.h>
