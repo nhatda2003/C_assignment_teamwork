@@ -1,3 +1,18 @@
+/*
+Simulate:
+- Case 1: With traffic light
+- Case 2: No traffic light
+
+
+Tasks undone:
+- File I/O to read and create map
+- Linked list for vehicle
+- Logic to wait for vehicle (or change direction)
+- Counter to represent efficiency of 2 cases (with traffict light vs no traffic light)
+- Case 2
+- Traffic light for case 1
+- Change: Big road 6 lanes, small road 3 lanes
+*/
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
