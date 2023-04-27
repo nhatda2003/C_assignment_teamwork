@@ -97,6 +97,7 @@ void move(Vehicle* vehicle, char** map){
 
     int* x0 = &(vehicle->x);
     int* y0 = &(vehicle->y);
+    int*waiting = &(vehicle->wait);
 
     if (vehicle->arrive==1){
             vehicle->exit=1;
@@ -156,16 +157,16 @@ void move(Vehicle* vehicle, char** map){
         }
    
     } else if(map[dmin1x-1][dmin1y-1] == '*'){
-        if (vehicle->wait == 0){
-            vehicle->wait = 1;
-        } else if (vehicle->wait==1){
-            vehicle->wait = 0;
+        if(*waiting<=10){
+            *waiting +=1;
+        } else{
+            *waiting = 0;
             map[*x0-1][*y0-1] = ' ';
             *x0 = dmin1x;
             *y0 = dmin1y;
             map[*x0-1][*y0-1] = '*';
-        }
         
+        }
     }
     
 }
@@ -384,11 +385,11 @@ int main(){
 
     int big_green = 0;
     int big_light_time = 0;
-    int big_max_time = 10;
+    int big_max_time = 20;
 
     int small_green = 0;
     int small_light_time = 0;
-    int small_max_time = 5;
+    int small_max_time = 10;
 
 
     
@@ -569,6 +570,8 @@ int main(){
     
     big_green =1;
     while (time < SIMULATION_TIME_INTERVAL){
+        big_green = 1;
+        small_green = 1;
         if (big_light_time == big_max_time){
            big_green = 0;
            small_green = 1;
@@ -588,7 +591,8 @@ int main(){
                 insert(new_vehicle);
             }
 
-        } else if (small_green ==1){
+        }
+        if (small_green ==1){
             small_light_time ++;
             new_vehicle = random_spawn_small_road_1(map, spawn_set_on_small_road_1, number_of_lanes_on_small_road_1);
             if (new_vehicle!=NULL){
