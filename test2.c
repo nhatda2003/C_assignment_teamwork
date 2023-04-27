@@ -3,11 +3,10 @@
 #include<math.h>
 #include <unistd.h>
 #include <time.h>
-#define ROWS 16
-#define COLS 10
 #define SIMULATION_TIME_INTERVAL 20
 
 int counter;
+int ROWS=0, COLS=0;
 
 typedef struct Vehicle{
     char name;
@@ -112,6 +111,11 @@ void move(Vehicle* vehicle, char** map){
 }
 
 
+Vehicle* random_spawn_big_road_1_y(char**map){
+    int y = randomInRange(0,1);
+}
+
+
 void map_print(char** map){
     for (int i = 0; i<ROWS;i++){
         for(int j = 0; j<COLS;j++){
@@ -122,6 +126,15 @@ void map_print(char** map){
 };
 
 
+Vehicle* random_spawn_big_road_1(char **map){
+
+}
+
+Vehicle* random_spawn_small_road_1(){
+
+}
+
+
 /*Maybe use file I/O to set map*/
 
 
@@ -129,8 +142,8 @@ int main(){
     printf("Running\n");
     char** map;
     char filename[] = "map16x10.txt";
-    char array[COLS][ROWS];
     char temp;
+    int size;
     int time = 0;
 
 
@@ -149,6 +162,63 @@ int main(){
 
     FILE *file = fopen(filename, "r");
 
+    /*Read map from file I/O*/
+
+    /*read size*/
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file.\n");
+        exit(1);
+    }
+
+    while ((temp = fgetc(file)) != EOF){
+        if (temp == '\n'){
+            ROWS ++;
+            size --;
+        }
+        size ++;
+    }
+    ROWS++;
+    COLS = size/ROWS;
+    printf("Found: %d %d\n", COLS, ROWS);
+
+    fclose(file);
+
+
+    file = fopen(filename, "r");
+    char array[COLS][ROWS];
+
+
+
+    /*print to test map read*/
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS+1; j++) {
+             fscanf(file, "%c", &temp);
+                if(i<ROWS && j<COLS){
+                    array[j][i] = temp;
+                }
+            }
+        }
+    fclose(file);
+    
+
+    /*Find number of lanes*/
+    for (int i = 0; i<COLS; i++){
+        
+    }
+
+
+
+
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+                printf("%c", array[j][i]);
+            }
+            printf("\n");
+    }
+    
+
+
 
     /*Declare map object*/
     map = (char**) malloc(COLS*(sizeof(char*)));
@@ -159,20 +229,6 @@ int main(){
     }
 
 
-    /*Read map from file I/O*/
-    if (file == NULL) {
-        fprintf(stderr, "Error opening file.\n");
-        exit(1);
-    }
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS+1; j++) {
-             fscanf(file, "%c", &temp);
-                if(i<ROWS && j<COLS){
-                    array[j][i] = temp;
-                }
-    }
-        }
-    fclose(file);
 
 
     // Convert array to map
@@ -235,7 +291,7 @@ int main(){
     insert(&car5);
 
 
-    sleep(1);
+    sleep(10);
     system("cls");
 
 
@@ -243,23 +299,48 @@ int main(){
     struct node* current;
     struct node* place_holder;
     while (time < SIMULATION_TIME_INTERVAL){
-        /* 
-        - Can chinh lai thu tu cua cai linked list 
+        /*
+        - Doc size map luon tu file I/O - >su dung het malloc
+
+        - Can chinh lai thu tu cua cai linked list
         - Can co ham random() de spawn() xe
         - spawn coi nhu la mot cai move vao vi tri xuat phat
         - Can co 1 tap cac vi tri spawn duoc doc vao tu map
-        
+
         - random_spawn_big_road -> den xanh o big road thi moi spawn:
-            + nhan vao map de biet o vi tri can spawn dang co xe nao khong)
+            + nhan vao map de biet o vi tri can spawn dang co xe nao khong
+            + Can chuan bi array cac vi tri spawn, destination duoc duoc tu map
+                spawn_big_1_y + big_lanes
+                spawn_big_2_y + big_lanes
+                spawn_small_1_x + small_lanes
+                spawn_small_2_x + small_lanes
+
+                destination_big_1_y
+                destination_big_2_y
+                destination_small_1_x
+                destination_small_2_x
+
+                    int spawn_set_on_big_road_1; // + (1, y)
+                    int spawn_set_on_big_road_2; // + (COLS, y)
+                    int spawn_set_on_small_road_1; // + (x, ROWS)
+                    int spawn_set_on_small_road_2; // + (x, 1)
+
+                    int destination_set_on_big_road_1; // - (1, y)
+                    int destination_set_on_big_road_2; // - (COLS, y)
+                    int destination_set_on_small_road_1; // - (x, ROWS)
+                    int destination_set_on_small_road_2; // - (x, 1)
+
+
+
             + return ra pointer vehicle
             + su dung pointer vehicle do de insert()
         random_spawn_small_road -> den xanh o big road thi moi spawn (tuong tu ...big_road)
         */
-        
+
         current = head;
 
         /*Refresh map*/
-        map_print(map); 
+        map_print(map);
         printf("\nTime: %d", time);
         printf("\nPassed: %d", counter);
         sleep(1);
@@ -267,14 +348,14 @@ int main(){
 
         while (current != NULL) {
             place_holder = current;
-            current = (current->next); 
+            current = (current->next);
             if(place_holder->data->exit ==1){
                 delete(place_holder->data->name);
             }else{
                 move(place_holder->data, map);
             }
 
-        } 
+        }
         time ++;
     }
     return 0;
